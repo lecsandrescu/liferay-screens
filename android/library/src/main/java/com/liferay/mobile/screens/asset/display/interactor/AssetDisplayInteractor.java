@@ -1,18 +1,21 @@
 package com.liferay.mobile.screens.asset.display.interactor;
 
 import com.liferay.mobile.android.service.Session;
+import com.liferay.mobile.screens.asset.AssetEntry;
 import com.liferay.mobile.screens.asset.AssetEvent;
+import com.liferay.mobile.screens.asset.AssetFactory;
 import com.liferay.mobile.screens.asset.display.AssetDisplayListener;
 import com.liferay.mobile.screens.asset.display.AssetDisplayScreenlet;
-import com.liferay.mobile.screens.asset.AssetEntry;
-import com.liferay.mobile.screens.asset.AssetFactory;
+import com.liferay.mobile.screens.asset.list.connector.ScreensAssetEntryConnector;
 import com.liferay.mobile.screens.base.interactor.BaseCacheReadInteractor;
+import com.liferay.mobile.screens.context.LiferayServerContext;
 import com.liferay.mobile.screens.context.SessionContext;
 import com.liferay.mobile.screens.service.v70.ScreensassetentryService;
 import com.liferay.mobile.screens.util.JSONUtil;
-import java.util.HashMap;
+import com.liferay.mobile.screens.util.ServiceProvider;
 import java.util.Locale;
 import java.util.Map;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -36,11 +39,20 @@ public class AssetDisplayInteractor extends BaseCacheReadInteractor<AssetDisplay
 
 			ScreensassetentryService service = new ScreensassetentryService(session);
 			return service.getAssetEntry(className, classPK, Locale.getDefault().getLanguage());
-		} else {
+		} else if (args[0] instanceof Long) {
 			long entryId = (long) args[0];
 
 			ScreensassetentryService service = new ScreensassetentryService(getSession());
 			return service.getAssetEntry(entryId, Locale.getDefault().getLanguage());
+		} else {
+			String portletItemName = (String) args[0];
+
+			ScreensAssetEntryConnector connector =
+				ServiceProvider.getInstance().getScreensAssetEntryConnector(getSession());
+			JSONArray assetEntry =
+				connector.getAssetEntries(LiferayServerContext.getCompanyId(), groupId, portletItemName,
+					locale.toString(), 1);
+			return assetEntry.getJSONObject(0);
 		}
 	}
 

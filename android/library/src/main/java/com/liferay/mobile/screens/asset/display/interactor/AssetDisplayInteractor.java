@@ -84,7 +84,11 @@ public class AssetDisplayInteractor extends BaseCacheReadInteractor<AssetDisplay
 		if (args.length > 1) {
 			cacheId = (long) args[1];
 		} else {
-			cacheId = (long) args[0];
+			if (args[0] instanceof Long) {
+				cacheId = (long) args[0];
+			} else {
+				return (String) args[0];
+			}
 		}
 
 		return String.valueOf(cacheId);

@@ -15,6 +15,7 @@ import com.liferay.mobile.screens.util.JSONUtil;
 import com.liferay.mobile.screens.util.ServiceProvider;
 import java.util.Locale;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -52,6 +53,11 @@ public class AssetDisplayInteractor extends BaseCacheReadInteractor<AssetDisplay
 			JSONArray assetEntry =
 				connector.getAssetEntries(LiferayServerContext.getCompanyId(), groupId, portletItemName,
 					locale.toString(), 1);
+
+			if (assetEntry.length() == 0) {
+				throw new NoSuchElementException();
+			}
+
 			return assetEntry.getJSONObject(0);
 		}
 	}
